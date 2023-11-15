@@ -2,17 +2,20 @@
 
 namespace App\Controller;
 
+use App\Entity\Controle;
 use App\Entity\Employees;
 use App\Entity\Contracts;
+use App\Form\ContactLinkingFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    #[Route('/', name: 'app_home', methods: ['GET'])]
-    public function index(EntityManagerInterface  $entityManager): Response
+    #[Route('/', name: 'app_home')]
+    public function index(Request $request,EntityManagerInterface  $entityManager): Response
     {
 
        
@@ -21,12 +24,22 @@ class HomeController extends AbstractController
 
         // var_dump($ListeContracts);
 
+        $controle = new Controle();
+        $form = $this->createForm(ContactLinkingFormType::class,$controle);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($controle);
+            $entityManager->flush();
+            $this->addFlash('success', 'Votre liaison a bien été enregistrée');
+            return $this->redirectToRoute('app_home');
+        }
 
 
         // Le bouton dans votre template appelle getData lorsque cliqué
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
-            'ListeContracts' => $ListeContracts
+            'ListeContracts' => $ListeContracts,
+            'form' => $form->createView(),
         ]);
     }
 

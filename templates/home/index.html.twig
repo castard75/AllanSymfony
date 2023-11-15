@@ -131,6 +131,46 @@ body %}
           </div>
           <!-- End Customers Card -->
 
+
+
+
+
+          <div class="col-12">
+            <div class="card">
+              <h5 class="card-title">Liaisons</h5>
+
+              {% for message in app.flashes('success') %}
+                <div class="notification success closeable">
+                  <p><span>{{ message }}</span></p>
+                  <a class="close"></a>
+                </div>
+              {% endfor %}
+
+                {{ form_start(form) }}
+                {{ form_row(form.contratid) }}
+                {{ form_row(form.telephoneid) }}
+                {{ form_row(form.create) }}
+                {{ form_end(form) }}
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           <!-- Reports -->
           <div class="col-12">
             <div class="card">

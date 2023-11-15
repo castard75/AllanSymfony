@@ -133,6 +133,15 @@ class Contracts
      */
     private $customerid;
 
+    public function __toString(): string
+    {
+        return sprintf(
+            'Réf: %s - Client: %s',
+            $this->referencebr,
+            $this->getCustomerid()->getName(),
+        );
+    }
+
     public function getId(): ?int
     {
         return $this->id;

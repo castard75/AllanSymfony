@@ -159,7 +159,7 @@ class Controle
 
 
 /**
-     * @var \Telephone
+     * @var  Telephone
      *
      * @ORM\ManyToOne(targetEntity="Telephone")
      * @ORM\JoinColumns({
@@ -446,6 +446,18 @@ class Controle
     public function setEndserviceat(?\DateTimeInterface $endserviceat): static
     {
         $this->endserviceat = $endserviceat;
+
+        return $this;
+    }
+
+    public function getTelephoneid(): ?Telephone
+    {
+        return $this->telephoneid;
+    }
+
+    public function setTelephoneid(?Telephone $telephoneid): static
+    {
+        $this->telephoneid = $telephoneid;
 
         return $this;
     }
