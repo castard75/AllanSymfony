@@ -1,0 +1,148 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Employeesextras
+ *
+ * @ORM\Table(name="employeesextras", indexes={@ORM\Index(name="EmployeeIdEmployeeExtra", columns={"EmployeeId"})})
+ * @ORM\Entity
+ */
+class Employeesextras
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="Id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="Code", type="string", length=20, nullable=true)
+     */
+    private $code;
+
+    /**
+     * @var string|null
+     *
+     * @ORM\Column(name="Value", type="text", length=65535, nullable=true)
+     */
+    private $value;
+
+    /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="CreatedAt", type="datetime", nullable=true, options={"default"="CURRENT_TIMESTAMP"})
+     */
+    private $createdat = 'CURRENT_TIMESTAMP';
+
+    /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="UpdatedAt", type="datetime", nullable=true, options={"default"="CURRENT_TIMESTAMP"})
+     */
+    private $updatedat = 'CURRENT_TIMESTAMP';
+
+    /**
+     * @var \DateTime|null
+     *
+     * @ORM\Column(name="DeletedAt", type="datetime", nullable=true)
+     */
+    private $deletedat;
+
+    /**
+     * @var \Employees
+     *
+     * @ORM\ManyToOne(targetEntity="Employees")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="EmployeeId", referencedColumnName="Id")
+     * })
+     */
+    private $employeeid;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    public function setCode(?string $code): static
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    public function getValue(): ?string
+    {
+        return $this->value;
+    }
+
+    public function setValue(?string $value): static
+    {
+        $this->value = $value;
+
+        return $this;
+    }
+
+    public function getCreatedat(): ?\DateTimeInterface
+    {
+        return $this->createdat;
+    }
+
+    public function setCreatedat(?\DateTimeInterface $createdat): static
+    {
+        $this->createdat = $createdat;
+
+        return $this;
+    }
+
+    public function getUpdatedat(): ?\DateTimeInterface
+    {
+        return $this->updatedat;
+    }
+
+    public function setUpdatedat(?\DateTimeInterface $updatedat): static
+    {
+        $this->updatedat = $updatedat;
+
+        return $this;
+    }
+
+    public function getDeletedat(): ?\DateTimeInterface
+    {
+        return $this->deletedat;
+    }
+
+    public function setDeletedat(?\DateTimeInterface $deletedat): static
+    {
+        $this->deletedat = $deletedat;
+
+        return $this;
+    }
+
+    public function getEmployeeid(): ?Employees
+    {
+        return $this->employeeid;
+    }
+
+    public function setEmployeeid(?Employees $employeeid): static
+    {
+        $this->employeeid = $employeeid;
+
+        return $this;
+    }
+
+
+}
