@@ -35,14 +35,27 @@ class HomeController extends AbstractController
     }
 
     #[Route('/liaison', name: 'app_liaison')]
-    public function liaison(Request $request, EntityManagerInterface $entityManager): Response
+    public function liaison(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
     {
 
         $controle = new Controle();
-        $form = $this->createForm(ContactLinkingFormType::class, $controle, [
-            'action' => $this->generateUrl('app_liaison_create'),
-            'method' => 'POST',
-        ]);
+        $form = $this->createForm(ContactLinkingFormType::class, $controle);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($request->isXmlHttpRequest()) { // Logique pour une requête Ajax en cas de succès
+                $entityManager->persist($controle);
+                $entityManager->flush();
+                $data = $serializer->serialize($controle, 'json');
+                return new JsonResponse(['success' => true, 'data' => json_decode($data)]);
+            }
+
+        } else {
+            if ($request->isXmlHttpRequest()) { // Logique pour une requête Ajax en cas d'erreur
+                $errors = ""; // Récupérer les erreurs du formulaire
+                return new JsonResponse(['success' => false, 'errors' => $errors]);
+            }
+        }
+
 
         $controls = $entityManager->getRepository(Controle::class)->findBy([], ['id' => 'DESC']);
         return $this->render('home/liaison.html.twig', [
@@ -52,25 +65,6 @@ class HomeController extends AbstractController
         ]);
     }
 
-    #[Route('/liaison/create', name: 'app_liaison_create', methods: ['POST'], condition: "request.isXmlHttpRequest()")]
-    public function liaisonCreate(Request $request, EntityManagerInterface $entityManager,SerializerInterface $serializer): Response
-    {
-        $controle = new Controle();
-        $form = $this->createForm(ContactLinkingFormType::class, $controle, [
-            'action' => $this->generateUrl('app_home'),
-            'method' => 'POST',
-        ]);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($controle);
-            $entityManager->flush();
-            $data = $serializer->serialize($controle, 'json');
-            return new JsonResponse(['success' => true, 'data' => json_decode($data)]);
-        }
-
-        $errors = "";
-            return new JsonResponse(['success' => false, 'errors' => $errors]);
-    }
 
     // public function getData(): Response
     // {
