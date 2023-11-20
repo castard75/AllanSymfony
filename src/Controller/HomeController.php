@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\DTO\TelephoneDTO;
 use App\Entity\Controle;
 use App\Entity\Employees;
 use App\Entity\Contracts;
+use App\Entity\Telephone;
 use App\Form\ContactLinkingFormType;
+use App\Form\TelephoneDTOType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,6 +69,47 @@ class HomeController extends AbstractController
         ]);
     }
 
+
+    #[Route('/associate', name: 'app_associate')]
+    public function associate(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer): Response
+    {
+
+        $telephones = $entityManager->getRepository(Telephone::class)->findAll();
+
+        $forms = [];
+        foreach ($telephones as $telephone) {
+            $dto = (new TelephoneDTO())->setTelephone($telephone);
+            $form = $this->createForm(TelephoneDTOType::class, $dto);
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                if ($request->isXmlHttpRequest()) { // si traitement ajax success
+                    $controle = (new Controle())
+                        ->setTelephoneid($dto->getTelephone())
+                        ->setContratid($dto->getContrat());
+                    $entityManager->persist($controle);
+                    $entityManager->flush();
+                    $data = $serializer->serialize($controle, 'json');
+                    return new JsonResponse(['success' => true, 'data' => json_decode($data)]);
+
+                }
+            }else {
+                if ($request->isXmlHttpRequest()) { // si erreur traitement ajax
+                    $errors = [];
+                    foreach ($form->getErrors(true) as $error) {
+                        $errors[] = $error->getMessage();
+                    }
+                    return new JsonResponse(['success' => false, 'errors' => $errors], Response::HTTP_BAD_REQUEST);
+                }
+            }
+
+            $forms[$telephone->getId()] = $form->createView();
+        }
+
+        return $this->render('home/associate.html.twig', [
+            'forms' => $forms,
+        ]);
+    }
 
     // public function getData(): Response
     // {
