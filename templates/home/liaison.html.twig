@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %} {% block title %}Accueil{% endblock %} {% block
+body %}
+
+<main id="main" class="main">
+  <div class="pagetitle">
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+        <li class="breadcrumb-item active">Liaison</li>
+      </ol>
+    </nav>
+  </div>
+  <!-- End Page Title -->
+
+  <section class="section dashboard">
+    <div class="modal fade" id="basicModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Formulaire de liaison</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            {{ form_start(form, {'attr': {'id': 'liaisonForm'}}) }}
+            {{ form_row(form.contratid) }}
+
+            {{ form_row(form.create) }}
+            {{ form_end(form) }}
+            <script>
+              $(document).ready(function () {
+                $("#liaisonForm").submit(function (e) {
+                  e.preventDefault();
+
+                  var telephoneId = $(document.activeElement).data(
+                    "telephone-id"
+                  );
+                  $.ajax({
+                    //url : app_liaison_create' , type : POST
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    data: $(this).serialize() + "&telephoneId=" + telephoneId,
+                    success: function (response) {
+                      var newLine =
+                        "<tr>" +
+                        '<td style="background: #a0bbf18f">' +
+                        response.data.contratid.reference +
+                        "</td>" +
+                        '<td style="background: #a0bbf18f">' +
+                        response.data.contratid.customerid.name +
+                        "</td>" +
+                        '<td style="background: #a0bbf18f">' +
+                        response.data.telephoneid.name +
+                        "</td>" +
+                        "</tr>";
+
+                      // Insérer la nouvelle ligne en première position du tbody
+                      $(".datatable tbody").prepend(newLine);
+
+                      let addMessage =
+                        '<span class="badge bg-success">Enregistrement terminé avec succès</span>';
+
+                      $("#success").prepend(addMessage);
+                    },
+                    error: function (xhr) {
+                      // Gérer les erreurs
+                    },
+                  });
+                });
+              });
+            </script>
+          </div>
+
+          <div class="modal-footer" id="success"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Left side columns -->
+      <div class="col-lg-12">
+        <div class="row">
+          <!-- Reports -->
+
+          <!-- End Reports -->
+          <section class="section">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Liaison</h5>
+
+                    <!-- Table with stripped rows -->
+                    <table class="table datatable">
+                      <thead>
+                        <tr>
+                          <th scope="col">Référence</th>
+                          <th scope="col">Télephone</th>
+
+                          <th scope="col">Contrat</th>
+                          <th scope="col">Add</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for telephone in telephones %}
+                        <tr>
+                          <td>x</td>
+                          <td>
+                            {{ telephone.name }}
+                          </td>
+
+                          <td class="d-none">x</td>
+
+                          <td>
+                            <div
+                              class="icon pe-auto"
+                              data-bs-toggle="modal"
+                              data-bs-target="#basicModal "
+                            >
+                              <i
+                                class="bi bi-pencil-fill pe-auto"
+                                style="cursor: pointer"
+                                data-toggle="modal"
+                                data-target="#basicModal"
+                                data-telephone-id="{{ telephone.id }}"
+                              ></i>
+                            </div>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <!-- End Table with stripped rows -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+      <!-- End Left side columns -->
+    </div>
+  </section>
+</main>
+
+{% endblock %}
